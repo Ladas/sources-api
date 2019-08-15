@@ -111,6 +111,11 @@ class OpenapiGenerator
     "##{PARAMETERS_PATH}/#{name}"
   end
 
+  def required_cols(model, used_attrs)
+    required_cols = model.columns_hash.values.reject(&:null).map(&:name)
+    ((required_cols & used_attrs) - GENERATOR_READ_ONLY_ATTRIBUTES.map(&:to_s)).sort
+  end
+
   def openapi_list_description(klass_name, primary_collection)
     primary_collection = nil if primary_collection == klass_name
     {
@@ -155,11 +160,18 @@ class OpenapiGenerator
   end
 
   def openapi_schema(klass_name)
-    {
+    model      = klass_name.constantize
+    properties = openapi_schema_properties(klass_name)
+
+    schema = {
       "type"                 => "object",
+      "required"             => required_cols(model, properties.keys),
       "properties"           => openapi_schema_properties(klass_name),
       "additionalProperties" => false
     }
+
+    schema.delete("required") if schema["required"].blank?
+    schema
   end
 
   def openapi_schema_properties(klass_name)
@@ -442,7 +454,7 @@ GENERATOR_SUBSTITUTE_BLACKLISTED_ATTRIBUTES = {
 GENERATOR_READ_ONLY_DEFINITIONS = [
 ].to_set.freeze
 GENERATOR_READ_ONLY_ATTRIBUTES = [
-  :created_at, :updated_at, :archived_at, :last_seen_at
+  :created_at, :updated_at, :archived_at, :last_seen_at, :id, :tenant, :uid
 ].to_set.freeze
 
 namespace :openapi do

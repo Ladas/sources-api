@@ -942,6 +942,10 @@
     "schemas": {
       "Application": {
         "type": "object",
+        "required": [
+          "application_type_id",
+          "source_id"
+        ],
         "properties": {
           "application_type_id": {
             "$ref": "#/components/schemas/ID"
@@ -967,6 +971,9 @@
       },
       "ApplicationType": {
         "type": "object",
+        "required": [
+          "name"
+        ],
         "properties": {
           "created_at": {
             "format": "date-time",
@@ -1243,6 +1250,10 @@
       },
       "Source": {
         "type": "object",
+        "required": [
+          "name",
+          "source_type_id"
+        ],
         "properties": {
           "created_at": {
             "format": "date-time",
@@ -1284,6 +1295,11 @@
       },
       "SourceType": {
         "type": "object",
+        "required": [
+          "name",
+          "product_name",
+          "vendor"
+        ],
         "properties": {
           "created_at": {
             "format": "date-time",
